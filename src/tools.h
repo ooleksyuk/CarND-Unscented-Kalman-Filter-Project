@@ -1,5 +1,4 @@
-#ifndef TOOLS_H_
-#define TOOLS_H_
+#pragma once
 #include <vector>
 #include "Eigen/Dense"
 
@@ -25,5 +24,3 @@ public:
   VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
 
 };
-
-#endif /* TOOLS_H_ */
