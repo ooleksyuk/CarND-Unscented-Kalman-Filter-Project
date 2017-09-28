@@ -138,6 +138,25 @@ int main()
           msgJson["rmse_vy"] = RMSE(3);
           auto msg = "42[\"estimate_marker\"," + msgJson.dump() + "]";
           // std::cout << msg << std::endl;
+          // Output file name
+          string out_file_name_ = "../output.txt";
+          ofstream out_file_(out_file_name_.c_str(), ofstream::out | ofstream::app);
+          if (!out_file_.is_open()) {
+            std::cerr << "Cannot open output file: " << out_file_name_ << endl;
+            exit(EXIT_FAILURE);
+          }
+
+          if (out_file_.is_open()) {
+            // est_px est_py est_vx est_vy meas_px meas_py gt_px gt_py gt_vx gt_vy
+            out_file_ << p_x << "\t" << p_y << "\t" << v1 << "\t" << v2 << "\t";
+            out_file_ << RMSE(0) << "\t" << RMSE(1) << "\t" << RMSE(2) << "\t" << RMSE(3) << endl;
+          }
+
+          // close files
+          if (out_file_.is_open()) {
+            out_file_.close();
+          }
+          
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
 	  
         }
