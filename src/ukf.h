@@ -27,8 +27,30 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
+  // sigma point matrix
+  MatrixXd Xsig_;
+
+  // augmented sigma point matrix
+  MatrixXd Xsig_aug_;
+
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
+
+  // incoming radar measurement
+  VectorXd z_;
+
+  // mean predicted measurement
+  VectorXd z_pred_;
+
+  //sigma points in measurement space
+  MatrixXd Zsig_;
+
+  // predicted measurement covariance
+  MatrixXd S_;
+
+  MatrixXd R_laser_;
+
+  MatrixXd R_radar_;
 
   ///* time when the state is true, in us
   long long time_us_;
@@ -63,23 +85,23 @@ public:
   ///* Augmented state dimension
   int n_aug_;
 
+  // Number of sigma points
   int n_sig_;
 
   ///* Sigma point spreading parameter
   double lambda_;
 
-  ///* NIS variable for storing Radar data
+  ///* the current NIS for radar
   double NIS_radar_;
 
-  ///* NIS variable for storing Lidar data
+  ///* the current NIS for laser
   double NIS_laser_;
 
-  ///* Radar measurement noise covariance matrix
-  MatrixXd R_radar_;
+  // previous timestamp (Added)
+  long previous_timestamp_;
 
-  ///* Lidar measurement noise covariance matrix
-  MatrixXd R_lidar_;
-
+  // small value handling
+  double EPS;
 
   /**
    * Constructor
@@ -100,9 +122,9 @@ public:
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
    * matrix
-   * @param delta_t Time between k and k+1 in s
+   * @param dt Time between k and k+1 in s
    */
-  void Prediction(double delta_t);
+  void Prediction(double dt);
 
   /**
    * Updates the state and the state covariance matrix using a laser measurement
@@ -115,6 +137,16 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
-  void UpdateUKF(MeasurementPackage meas_package, MatrixXd Zsig, int n_z);
-  void NormAng(double *ang);
+
+  void AugmentedSigmaPoints();
+
+  void PredictSigmaPoints(double dt);
+
+  void PredictMeanAndCovariance();
+
+  void PredictRadarMeasurement();
+
+  void PredictLidarMeasurement();
+
+  void UpdateState(int n_z, bool use_radar_);
 };
