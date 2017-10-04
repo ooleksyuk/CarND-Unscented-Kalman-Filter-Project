@@ -9,8 +9,8 @@ Tools::Tools() {}
 
 Tools::~Tools() {}
 
-VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
-                              const vector<VectorXd> &ground_truth) {
+VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth)
+{
   /**
     * Calculate the RMSE here.
   */
@@ -44,4 +44,10 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations,
 
   //return the result
   return rmse;
+}
+
+double Tools::NormillizeAngel(double &angel)
+{
+  while (angel > M_PI) angel -= 2. * M_PI;
+  while (angel < -M_PI) angel += 2. * M_PI;
 }

@@ -23,4 +23,11 @@ public:
   */
   VectorXd CalculateRMSE(const vector<VectorXd> &estimations, const vector<VectorXd> &ground_truth);
 
+  /**
+   * A helper function to normalize an angel
+   * @param angel
+   * @return
+   */
+  double NormillizeAngel(double &angel);
+
 };

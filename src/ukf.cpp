@@ -422,6 +422,8 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   //create matrix for sigma points in measurement space
   MatrixXd Zsig = MatrixXd(n_z, n_sig_);
 
+  Tools tools;
+
   //transform sigma points into measurement space
   for (int i = 0; i < n_sig_; i++) {  //2n+1 simga points
 
@@ -443,13 +445,13 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
     else {
       // p_x = 0.001;
       // p_y = 0.001;
-      Zsig(0,i) = 0.0;                        //r
+      Zsig(0,i) = 0.0;                                 //r
       Zsig(1,i) = 0.0;                                 //phi
       Zsig(2,i) = 0.0;
     }
-    Zsig(0, i) = sqrt(p_x*p_x + p_y*p_y);                        //r
-    Zsig(1, i) = atan2(p_y, p_x);                                 //phi
-    Zsig(2, i) = (p_x*v1 + p_y*v2) / sqrt(p_x*p_x + p_y*p_y);   //r_dot
+    Zsig(0, i) = sqrt(p_x * p_x + p_y * p_y);                           //r
+    Zsig(1, i) = atan2(p_y, p_x);                                       //phi
+    Zsig(2, i) = (p_x * v1 + p_y * v2) / sqrt(p_x * p_x + p_y * p_y);   //r_dot
   }
 
   //mean predicted measurement
@@ -491,15 +493,11 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
 
     //residual
     VectorXd z_diff = Zsig.col(i) - z_pred;
-    //angle normalization
-    while (z_diff(1)> M_PI) z_diff(1) -= 2.*M_PI;
-    while (z_diff(1)<-M_PI) z_diff(1) += 2.*M_PI;
+    tools.NormillizeAngel(z_diff(1));
 
     // state difference
     VectorXd x_diff = Xsig_pred_.col(i) - x_;
-    //angle normalization
-    while (x_diff(3)> M_PI) x_diff(3) -= 2.*M_PI;
-    while (x_diff(3)<-M_PI) x_diff(3) += 2.*M_PI;
+    tools.NormillizeAngel(x_diff(3));
 
     Tc = Tc + weights_(i) * x_diff * z_diff.transpose();
   }
@@ -511,14 +509,12 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
   VectorXd z_diff = z - z_pred;
 
   //angle normalization
-  while (z_diff(1)> M_PI) z_diff(1) -= 2.*M_PI;
-  while (z_diff(1)<-M_PI) z_diff(1) += 2.*M_PI;
+  tools.NormillizeAngel(z_diff(1));
 
   //calculate NIS
   NIS_radar_ = z_diff.transpose() * S.inverse() * z_diff;
 
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
-  P_ = P_ - K*S*K.transpose();
-
+  P_ = P_ - K * S * K.transpose();
 }
