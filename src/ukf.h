@@ -64,6 +64,8 @@ public:
   ///* Augmented state dimension
   int n_aug_;
 
+  int n_sig_;
+
   ///* Sigma point spreading parameter
   double lambda_;
 
@@ -72,6 +74,9 @@ public:
 
   ///* NIS variable for storing Lidar data
   double NIS_laser_;
+
+  double p_x_min_;
+  double p_y_min_;
 
 
   /**
