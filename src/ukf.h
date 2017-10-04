@@ -1,5 +1,4 @@
-#ifndef UKF_H
-#define UKF_H
+#pragma once
 
 #include "measurement_package.h"
 #include "Eigen/Dense"
@@ -75,8 +74,11 @@ public:
   ///* NIS variable for storing Lidar data
   double NIS_laser_;
 
-  double p_x_min_;
-  double p_y_min_;
+  ///* Radar measurement noise covariance matrix
+  MatrixXd R_radar_;
+
+  ///* Lidar measurement noise covariance matrix
+  MatrixXd R_lidar_;
 
 
   /**
@@ -113,6 +115,6 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+  void UpdateUKF(MeasurementPackage meas_package, MatrixXd Zsig, int n_z);
+  void NormAng(double *ang);
 };
-
-#endif /* UKF_H */

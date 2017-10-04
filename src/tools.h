@@ -26,8 +26,5 @@ public:
   /**
    * A helper function to normalize an angel
    * @param angel
-   * @return
    */
-  double NormillizeAngel(double &angel);
-
 };

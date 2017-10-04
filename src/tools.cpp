@@ -45,9 +45,3 @@ VectorXd Tools::CalculateRMSE(const vector<VectorXd> &estimations, const vector<
   //return the result
   return rmse;
 }
-
-double Tools::NormillizeAngel(double &angel)
-{
-  while (angel > M_PI) angel -= 2. * M_PI;
-  while (angel < -M_PI) angel += 2. * M_PI;
-}
