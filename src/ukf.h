@@ -27,25 +27,25 @@ public:
   ///* state covariance matrix
   MatrixXd P_;
 
-  // sigma point matrix
+  ///* sigma point matrix
   MatrixXd Xsig_;
 
-  // augmented sigma point matrix
+  ///* augmented sigma point matrix
   MatrixXd Xsig_aug_;
 
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
 
-  // incoming radar measurement
+  ///* incoming radar measurement
   VectorXd z_;
 
-  // mean predicted measurement
+  ///* mean predicted measurement
   VectorXd z_pred_;
 
-  //sigma points in measurement space
+  ///* sigma points in measurement space
   MatrixXd Zsig_;
 
-  // predicted measurement covariance
+  ///* predicted measurement covariance
   MatrixXd S_;
 
   MatrixXd R_laser_;
@@ -85,7 +85,7 @@ public:
   ///* Augmented state dimension
   int n_aug_;
 
-  // Number of sigma points
+  ///* Number of sigma points
   int n_sig_;
 
   ///* Sigma point spreading parameter
@@ -97,10 +97,7 @@ public:
   ///* the current NIS for laser
   double NIS_laser_;
 
-  // previous timestamp (Added)
-  long previous_timestamp_;
-
-  // small value handling
+  ///* small value handling
   double EPS;
 
   /**
@@ -138,10 +135,25 @@ public:
    */
   void UpdateRadar(MeasurementPackage meas_package);
 
+  /**
+   * Creates augmented mean vector and augmented state covariance matrix
+   * and augments points of `x_` matrix into `Xsig_aug_`
+   * @param
+   * @return
+   */
   void AugmentedSigmaPoints();
 
+  /**
+   * Predicts sigma points px, py, v, yaw and yawd
+   * @param dt delta time, difference between time predicted and actual time, expressed in seconds
+   */
   void PredictSigmaPoints(double dt);
 
+  /**
+   * Predicts mean and covariance matrices `x_` and `P_`
+   * @param
+   * @return
+   */
   void PredictMeanAndCovariance();
 
   void PredictRadarMeasurement();

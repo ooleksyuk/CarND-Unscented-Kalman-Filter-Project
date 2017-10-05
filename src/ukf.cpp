@@ -1,6 +1,7 @@
 #include "ukf.h"
 #include "Eigen/Dense"
 #include <iostream>
+#include <math.h>
 
 using namespace std;
 using Eigen::MatrixXd;
@@ -40,10 +41,10 @@ UKF::UKF() {
   lambda_ = 3 - n_aug_;
 
   //create sigma point matrix
-  MatrixXd Xsig_ = MatrixXd(n_x_, 2 * n_x_ + 1);
+  Xsig_ = MatrixXd(n_x_, 2 * n_x_ + 1);
 
   //create sigma point matrix
-  MatrixXd Xsig_aug_ = MatrixXd(n_aug_, n_sig_);
+  Xsig_aug_ = MatrixXd(n_aug_, n_sig_);
 
   // Predicted sigma points as columns
   Xsig_pred_ = MatrixXd(n_x_, n_sig_);
@@ -73,9 +74,9 @@ UKF::UKF() {
 
   // R matrices
   R_radar_ = MatrixXd(3, 3);
-  R_radar_ << std_radr_*std_radr_, 0, 0,
-              0, std_radphi_*std_radphi_, 0,
-              0, 0, std_radrd_*std_radrd_;
+  R_radar_ << std_radr_ * std_radr_, 0, 0,
+              0, std_radphi_ * std_radphi_, 0,
+              0, 0, std_radrd_ * std_radrd_;
 
   R_laser_ = MatrixXd(2,2);
   R_laser_ << std_laspx_*std_laspx_, 0,
@@ -92,10 +93,10 @@ UKF::UKF() {
 UKF::~UKF() {}
 
 /**
- * @param {MeasurementPackage} meas_package The latest measurement data of
- * either radar or laser.
+ * we would like to make sure that `phi` is always with in `[-3.14, 3.14]` bracket
+ * @param phi
+ * @return phi
  */
-
 static double SNormalizeAngle2(double phi)
 {
   while (phi > M_PI) { phi -= 2. * M_PI; };
@@ -103,6 +104,11 @@ static double SNormalizeAngle2(double phi)
 
   return phi;
 }
+
+/**
+ * @param {MeasurementPackage} meas_package The latest measurement data of
+ * either radar or laser.
+ */
 
 void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
 
@@ -130,10 +136,10 @@ void UKF::ProcessMeasurement(MeasurementPackage measurement_pack) {
       double rho = measurement_pack.raw_measurements_[0];
       double phi = measurement_pack.raw_measurements_[1];
       double rho_dot = measurement_pack.raw_measurements_[2];
-      px = rho*cos(phi);
-      py = rho*sin(phi);
-      vx = rho_dot*cos(phi);
-      vy = rho_dot*sin(phi);
+      px = rho * cos(phi);
+      py = rho * sin(phi);
+      vx = rho_dot * cos(phi);
+      vy = rho_dot * sin(phi);
 
     }
     else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
@@ -333,6 +339,10 @@ void UKF::PredictRadarMeasurement() {
       Zsig_(2,i) = (p_x*v1 + p_y*v2 ) / sqrt(p_x*p_x + p_y*p_y);   //r_dot
     }
     else {
+      // to avoid division by 0 we calculate `r` `phi` and `r_dot`
+      // if `p_x` and `p_y` > 0 and assign 0 in the res of the cases
+      // division by `0` can happen in `atan2` function, that take in `p_x` and `p_y`
+      // if `p_y` is 0, we get incorrect response from `atan2` function
       Zsig_(0,i) = 0.0;       //r
       Zsig_(1,i) = 0.0;       //phi
       Zsig_(2,i) = 0.0;       //r_dot
